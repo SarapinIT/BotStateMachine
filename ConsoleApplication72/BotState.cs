@@ -8,11 +8,12 @@ namespace ConsoleApplication72
 
   public abstract class BotState
   {
-    private static readonly Dictionary<string, BotState> States = new Dictionary<string, BotState>
+    protected static readonly Dictionary<string, BotState> States = new Dictionary<string, BotState>
     {
       [nameof(OnState)] = new OnState(),
       [nameof(OffState)] = new OffState()
     };
+
  
     public static BotState State(string name)
     {
@@ -35,18 +36,11 @@ namespace ConsoleApplication72
       {
         Console.ForegroundColor = ConsoleColor.Red;
         Console.WriteLine("Неверная команда!");
-
-        Console.WriteLine("Доступные команды:");
-        Console.ForegroundColor = ConsoleColor.Blue;
-
-        foreach (var key in Actions.Keys)
-        {
-          Console.WriteLine(key);
-        }
         Console.ForegroundColor = ConsoleColor.White;
+        CommonCommands.CommandsList(context);
       }
     }
-    protected abstract Dictionary<string, Action<BotContext>> Actions { get; }
+    public abstract Dictionary<string, Action<BotContext>> Actions { get; }
   }
 
   public class OnState : BotState
@@ -55,9 +49,10 @@ namespace ConsoleApplication72
     {
       ["/on"] = (context) => { Console.WriteLine("state is already on!"); }, 
       ["/off"] = (context) => { Console.WriteLine("state switched to off"); context.State = State(nameof(OffState)); },
-      ["/echo"] = (context) => { Console.WriteLine(context.CurrentMessage); }
+      ["/echo"] = (context) => { Console.WriteLine(context.CurrentMessage); },
+      ["/commands"] = CommonCommands.CommandsList
     };
-    protected override Dictionary<string, Action<BotContext>> Actions => _actions;
+    public override Dictionary<string, Action<BotContext>> Actions => _actions;
     
   }
 
@@ -66,8 +61,9 @@ namespace ConsoleApplication72
     private Dictionary<string, Action<BotContext>> _actions = new Dictionary<string, Action<BotContext>>
     {
       ["/off"] = (context) => { Console.WriteLine("state is already off!"); },
-      ["/on"] = (context) => { Console.WriteLine("state switched to on"); context.State = State(nameof(OnState)); }
+      ["/on"] = (context) => { Console.WriteLine("state switched to on"); context.State = State(nameof(OnState)); },
+      ["/commands"] = CommonCommands.CommandsList
     };
-    protected override Dictionary<string, Action<BotContext>> Actions => _actions;
+    public override Dictionary<string, Action<BotContext>> Actions => _actions;
   }
 }

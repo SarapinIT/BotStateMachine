@@ -11,6 +11,8 @@ namespace ConsoleApplication72
     static void Main(string[] args)
     {
       var context = new BotContext(new OffState());
+      Console.WriteLine("введите /commands для получения списка команд");
+
       while (true)
       {
         Console.Write("user>");
@@ -32,21 +34,24 @@ namespace ConsoleApplication72
     }
     public void Request(string text)
     {
-      if(text[0] == '/')
+      if(text.Length > 0)
       {
-        var index = text.IndexOf(' ');
-        if(index >= 0)
+        if (text[0] == '/')
         {
-          CurrentCommand = text.Substring(0, index);
-          CurrentMessage = text.Substring(index + 1);
+          var index = text.IndexOf(' ');
+          if (index >= 0)
+          {
+            CurrentCommand = text.Substring(0, index);
+            CurrentMessage = text.Substring(index + 1);
+          }
+          else
+          {
+            CurrentCommand = text;
+          }
         }
-        else
-        {
-          CurrentCommand = text;
-        }
+
+        State.Handle(this);
       }
-      
-      State.Handle(this);
     }
   }
 }
